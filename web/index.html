@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Codex Desktop Pet</title>
+    <style>
+      :root {
+        font:
+          14px/1.5 "Microsoft YaHei",
+          system-ui,
+          sans-serif;
+        color: #45424e;
+        background: #faf8fc;
+        color-scheme: light dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      main {
+        max-width: 700px;
+        margin: auto;
+        padding: 24px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      h1 {
+        font-size: 21px;
+        font-weight: 550;
+        margin: 0;
+      }
+      small {
+        color: #8c8597;
+      }
+      .stage {
+        height: max(480px, calc(var(--pet-size, 420px) + 40px));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        background: radial-gradient(
+          ellipse at 50% 75%,
+          #eee8f7 0,
+          transparent 64%
+        );
+        border-radius: 24px;
+        margin: 18px 0;
+        overflow: hidden;
+      }
+      .stage.plain {
+        background: none;
+      }
+      .stage img {
+        max-width: 100%;
+        height: var(--pet-size, 420px);
+        width: auto;
+        object-fit: contain;
+        image-rendering: auto;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+      .caption {
+        position: absolute;
+        bottom: 12px;
+        color: #81768e;
+        font-size: 13px;
+      }
+      .controls {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 12px 0;
+      }
+      button,
+      select {
+        font: inherit;
+        border: 1px solid #ded7e6;
+        border-radius: 12px;
+        background: #fff;
+        color: #544b60;
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+      button[aria-pressed="true"] {
+        background: #eee6f7;
+        border-color: #bdabd0;
+      }
+      button:disabled {
+        opacity: 0.45;
+        cursor: wait;
+      }
+      label {
+        color: #82778e;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      input {
+        accent-color: #a58abf;
+      }
+      details {
+        margin-top: 18px;
+        color: #887c93;
+      }
+      summary {
+        cursor: pointer;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding-top: 12px;
+      }
+      #message {
+        min-height: 22px;
+        color: #8b7e96;
+        font-size: 12px;
+      }
+      #error {
+        color: #a74e66;
+      }
+      #error:empty {
+        display: none;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          background: #211e27;
+          color: #e5dfee;
+        }
+        button,
+        select {
+          background: #302b38;
+          color: #e5dfee;
+          border-color: #51465e;
+        }
+        .stage {
+          background: radial-gradient(
+            ellipse at 50% 75%,
+            #3d314b 0,
+            transparent 64%
+          );
+        }
+      }
+      @media (max-width: 380px) {
+        main {
+          padding: 14px;
+        }
+        .stage {
+          height: 420px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <h1 id="name">Codex Desktop Pet</h1>
+          <small id="subtitle"></small>
+        </div>
+        <div class="controls">
+          <select id="language" aria-label="Language / 语言">
+            <option value="en">English</option>
+            <option value="zh">中文</option></select
+          ><select id="outfit" aria-label="Outfit / 服饰"></select>
+        </div>
+      </header>
+      <div class="stage" id="stage">
+        <img id="pet" alt="Desktop pet" draggable="false" /><span
+          class="caption"
+          id="caption"
+        ></span>
+      </div>
+      <div class="controls">
+        <button id="auto" aria-pressed="true"></button
+        ><label
+          ><span id="size-label"></span
+          ><input
+            id="size"
+            type="range"
+            min="220"
+            max="600"
+            value="420" /></label
+        ><button id="background"></button>
+      </div>
+      <p id="message"></p>
+      <p id="error" role="alert"></p>
+      <details>
+        <summary id="preview-label"></summary>
+        <div class="actions" id="actions"></div>
+      </details>
+    </main>
+    <script>
+      window.__CODEX_PET_PREVIEW_TOKEN__=/*PREVIEW*/;
+    </script>
+    <script type="module">
+      /*BUNDLE*/
+    </script>
+  </body>
+</html>

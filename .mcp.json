@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "codex_pet": {
+      "command": "node",
+      "args": [
+        "server.mjs"
+      ],
+      "cwd": ".",
+      "env": {
+        "CODEX_PET_DESKTOP_AUTOSTART": "1"
+      }
+    }
+  }
+}

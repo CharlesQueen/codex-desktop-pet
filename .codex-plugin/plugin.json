@@ -1,0 +1,24 @@
+{
+  "name": "codex-desktop-pet",
+  "version": "0.2.0",
+  "description": "Customizable desktop pet / 可自定义的 Codex 桌宠插件",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "hooks": "./hooks/hooks.json",
+  "requires_local_executor": true,
+  "interface": {
+    "displayName": "Codex Desktop Pet · 可自定义桌宠",
+    "shortDescription": "Custom pets & work-state animation / 自定义桌宠与工况联动",
+    "longDescription": "A local transparent desktop pet with configurable character packs, high-resolution animations and Codex lifecycle following. / 支持角色资源包、高清动画与 Codex 工作状态联动的本地透明桌宠。",
+    "developerName": "CharlesQueen",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Open Codex Desktop Pet / 打开 Codex 桌宠"
+    ]
+  }
+}

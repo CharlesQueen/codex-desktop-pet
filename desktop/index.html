@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' file:; connect-src 'none'"
+    />
+    <title>Codex Desktop Pet</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <img id="pet" alt="桌宠" draggable="false" />
+    <div id="controls">
+      <span id="caption"></span
+      ><button id="smaller" title="Smaller / 缩小">−</button
+      ><button id="larger" title="Larger / 放大">＋</button
+      ><button id="menu" title="Settings / 设置">⋯</button
+      ><button id="hide" title="Hide / 隐藏">⌄</button>
+    </div>
+    <div id="notice" role="status"></div>
+    <script src="renderer.mjs" type="module"></script>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+node_modules/
+.local/
+qa/
+release/
+dist/
+runtime.json
+.env
+.env.*
+*.log
+*.tmp
+*.lock
+!pnpm-lock.yaml
+tests/client-plugin-probe.py
+skills/sora-hd-control/

@@ -1,0 +1,83 @@
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent !important;
+  user-select: none;
+  font:
+    12px/1.4 "Microsoft YaHei",
+    system-ui,
+    sans-serif;
+}
+#pet {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+#controls {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+  padding: 4px 7px;
+  border: 1px solid #e4deecb0;
+  border-radius: 14px;
+  background: #fff9;
+  backdrop-filter: blur(12px);
+  color: #6c6079;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+body.show-controls #controls {
+  opacity: 1;
+}
+#controls button {
+  border: 0;
+  background: transparent;
+  color: #73657f;
+  font: inherit;
+  font-size: 16px;
+  width: 25px;
+  height: 24px;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 7px;
+}
+#controls button:hover {
+  background: #e8deef;
+}
+#caption {
+  font-size: 11px;
+  padding: 0 5px;
+}
+#notice {
+  position: absolute;
+  top: 8px;
+  left: 10%;
+  right: 10%;
+  text-align: center;
+  color: #7b6b89;
+  background: #fffc;
+  border-radius: 12px;
+  padding: 5px;
+  display: none;
+}
+body.has-error #notice {
+  display: block;
+}
+body.dragging {
+  cursor: grabbing;
+}

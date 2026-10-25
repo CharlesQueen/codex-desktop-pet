@@ -1,0 +1,40 @@
+{
+  "name": "codex-desktop-pet",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "preview": "node server.mjs --preview",
+    "desktop": "electron desktop/main.mjs",
+    "desktop:test": "node tests/run-desktop-test.mjs",
+    "configure": "node scripts/configure.mjs",
+    "build:release": "node build.mjs --release",
+    "test:browser": "node tests/browser.mjs",
+    "test:lifecycle": "node tests/desktop-lifecycle.mjs",
+    "format": "prettier --write \"*.mjs\" \"desktop/*.{mjs,cjs,html,css}\" \"web/*.{mjs,html}\" \"hooks/*.mjs\" \"scripts/*.mjs\" \"tests/*.mjs\""
+  },
+  "dependencies": {
+    "@modelcontextprotocol/ext-apps": "^1.0.0",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "electron": "^45.0.0",
+    "esbuild": "^0.25.0",
+    "playwright": "^1.64.1",
+    "prettier": "^3.9.10"
+  },
+  "description": "Customizable Codex desktop pet with high-resolution animation and work-state following.",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "author": "CharlesQueen",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CharlesQueen/codex-desktop-pet.git"
+  },
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=20"
+  }
+}

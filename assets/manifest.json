@@ -1,0 +1,184 @@
+{
+  "canvas": [
+    1422,
+    1117
+  ],
+  "common_crop": [
+    57,
+    586,
+    1479,
+    1703
+  ],
+  "resampled": false,
+  "source": "Example character animation pack",
+  "outfits": [
+    {
+      "id": "white",
+      "label": "洛丽塔白裙",
+      "label_en": "White Lolita dress"
+    }
+  ],
+  "animations": {
+    "idle": {
+      "frames": 8,
+      "durations_ms": [
+        350,
+        160,
+        110,
+        110,
+        110,
+        180,
+        180,
+        400
+      ],
+      "sha256": "a47467911e0ded0879357bd707b21070838adedd05765e3926aa17872fc0d4f7"
+    },
+    "running-right": {
+      "frames": 12,
+      "durations_ms": [
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80
+      ],
+      "sha256": "24eb6a0269f1df6ce14b42f270a194e2bb4c3ab486eaee1bc07cf572aae23ccb"
+    },
+    "running-left": {
+      "frames": 12,
+      "durations_ms": [
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80
+      ],
+      "sha256": "31c52a1378171dbf2636b486bb0fe20df5b7a552a60314224d6898d1329ce9ee"
+    },
+    "waving": {
+      "frames": 8,
+      "durations_ms": [
+        200,
+        110,
+        100,
+        100,
+        100,
+        100,
+        110,
+        250
+      ],
+      "sha256": "536c2c3411a9fc9d43ddc528038eb0093e26a255fba20c37b955242dc51b0391"
+    },
+    "jumping": {
+      "frames": 12,
+      "durations_ms": [
+        200,
+        100,
+        100,
+        80,
+        80,
+        80,
+        120,
+        80,
+        80,
+        80,
+        100,
+        300
+      ],
+      "sha256": "9103dc93e80d781f73fdb7d75a442cf9ce27df5f7d505fdeb6352bf61bc64fd7"
+    },
+    "failed": {
+      "frames": 8,
+      "durations_ms": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        280
+      ],
+      "sha256": "953da5594e6237fc53a5cf5e6e40e54004de93e4fc3b49bf0bb1a37298ae5453"
+    },
+    "waiting": {
+      "frames": 8,
+      "durations_ms": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        280
+      ],
+      "sha256": "c285c134655ee09dabd8204b4df5c06ac7ac1e45399f7491ae4c485f9668db95"
+    },
+    "running": {
+      "frames": 8,
+      "durations_ms": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        280
+      ],
+      "sha256": "3e3fab0956779e3c6b1e6c2690845ca748e61c595b0f79d04449cffd56702563"
+    },
+    "review": {
+      "frames": 8,
+      "durations_ms": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        280
+      ],
+      "sha256": "c7b3be75caa25467f5e1d880e874e2c70ce12f2bffe4393e66d9c8a03a24a74d"
+    },
+    "looking": {
+      "frames": 16,
+      "durations_ms": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "sha256": "3a2f1088b6dea9d729bd2b609200d392a36d74f7cd85ee61ba5a91f64785fad4"
+    }
+  },
+  "default_outfit": "white"
+}
