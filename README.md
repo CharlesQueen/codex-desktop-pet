@@ -10,7 +10,7 @@ A customizable Codex desktop pet plugin with a transparent floating window, nati
 
 The pictured character is one example pack. The plugin’s identity and animation controls are independent of that character. See [artwork rights](assets/RIGHTS.md).
 
-## What's new in 0.2.2
+## What's new in 0.2.1
 
 - **Smoother waiting animation:** six new in-between poses create a 20-frame tilt-and-return loop, with refined lace details and aligned positioning.
 - **Wider idle gaze:** the pet follows the mouse around its window, extending about 40 pixels beyond it at the default size. Work animations keep priority.
@@ -89,6 +89,8 @@ The update rebuilds the plugin and replaces its installed cache, then opens the 
 For ZIP installations, extract the new source files into the existing directory while keeping `.local`, then run the same update command. Commit or stash your own source changes before pulling a Git update.
 
 ## Development
+
+Release versions advance consecutively from the latest published release; development iterations do not consume version numbers.
 
 ```powershell
 pnpm test

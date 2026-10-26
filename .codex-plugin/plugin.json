@@ -1,6 +1,6 @@
 {
   "name": "codex-desktop-pet",
-  "version": "0.2.2",
+  "version": "0.2.1",
   "description": "Customizable desktop pet / 可自定义的 Codex 桌宠插件",
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
