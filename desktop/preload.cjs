@@ -1,3 +1,4 @@
+// Author: CharlesQueen
 // SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 // Copyright (c) 2026 CharlesQueen
 // 本项目仅供非商业学习、交流与分享。对于他人违反许可证或侵犯第三方权利的使用行为及其后果，作者概不承担任何责任。
@@ -24,6 +25,12 @@ contextBridge.exposeInMainWorld("codexPetDesktop", {
   dragMove: (value) => ipcRenderer.send("codex-pet-desktop:drag-move", value),
   dragEnd: () => ipcRenderer.send("codex-pet-desktop:drag-end"),
   painted: (value) => ipcRenderer.send("codex-pet-desktop:painted", value),
+  onPointer: (callback) => {
+    const listener = (_, p) => callback(p);
+    ipcRenderer.on("codex-pet-desktop:pointer", listener);
+    return () =>
+      ipcRenderer.removeListener("codex-pet-desktop:pointer", listener);
+  },
   onStatus: (callback) => {
     const listener = (_, s) => callback(s);
     ipcRenderer.on("codex-pet-desktop:status", listener);

@@ -116,18 +116,31 @@
       "sha256": "953da5594e6237fc53a5cf5e6e40e54004de93e4fc3b49bf0bb1a37298ae5453"
     },
     "waiting": {
-      "frames": 8,
+      "frames": 20,
       "durations_ms": [
         160,
         160,
         160,
         160,
         160,
-        160,
-        160,
-        280
+        100,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        180,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        260
       ],
-      "sha256": "c285c134655ee09dabd8204b4df5c06ac7ac1e45399f7491ae4c485f9668db95"
+      "sha256": "4034eac25cbb7679988c2f0de74dde3f2750af1c6699b872d244d4dd01bdb4bf",
+      "generated_inbetween_images": 6
     },
     "running": {
       "frames": 8,

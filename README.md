@@ -1,5 +1,7 @@
 # Codex Desktop Pet
 
+Author: **CharlesQueen**
+
 English · [简体中文](README.zh-CN.md)
 
 A customizable Codex desktop pet plugin with a transparent floating window, native-resolution animation, and automatic work-state following.
@@ -8,12 +10,28 @@ A customizable Codex desktop pet plugin with a transparent floating window, nati
 
 The pictured character is one example pack. The plugin’s identity and animation controls are independent of that character. See [artwork rights](assets/RIGHTS.md).
 
+## What's new in 0.2.2
+
+- **Smoother waiting animation:** six new in-between poses create a 20-frame tilt-and-return loop, with refined lace details and aligned positioning.
+- **Wider idle gaze:** the pet follows the mouse around its window, extending about 40 pixels beyond it at the default size. Work animations keep priority.
+- **Turn while dragging:** reversing the mouse direction turns the running animation immediately after a small movement threshold, without releasing the mouse or crossing the starting point.
+
+### Waiting animation
+
+<img src="docs/media/waiting.gif" width="360" alt="The repaired waiting animation gradually tilts its head and returns" />
+
+### Continuous drag and direction changes
+
+<img src="docs/media/drag-direction.gif" width="720" alt="A continuous drag changes the pet from running right to running left and back without releasing the mouse" />
+
+The drag demo uses the desktop renderer with scripted pointer movement. GIF previews are reduced in size; the installed animation retains its **1422 × 1117** canvas.
+
 ## Features
 
 - Transparent, always-on-top Windows companion; drag to move, use **Ctrl + wheel** or **− / +** to resize.
 - Automatic appearance when the local plugin connects, one shared window across connections, and exit after the last connection ends.
 - Work, waiting, completion and failure states from local Codex lifecycle hooks; temporary actions can also be set through MCP tools.
-- Nine standard action states, plus sixteen look directions. The supplied pack contains 100 original animation frames on a shared **1422 × 1117** canvas.
+- Nine standard action states, plus sixteen look directions. The supplied pack contains 112 playback frames, including six generated in-between images used in both directions of the waiting animation on a shared **1422 × 1117** canvas.
 - Character and outfit packs driven by `assets/manifest.json`; English and Chinese UI selection in the panel and tray menu.
 - **Escape** collapses controls. Closing the pet hides it to the tray; **Exit pet** ends it.
 
@@ -23,21 +41,19 @@ This is a separate native renderer connected to a local Codex plugin. It does no
 
 Download the [latest release](https://github.com/CharlesQueen/codex-desktop-pet/releases/latest), or clone this repository. Releases contain source and the existing artwork; they are not standalone installers.
 
-Requirements: Windows, Node.js 20 or later, pnpm 11, and a Codex desktop installation with local plugin support.
+Requirements: Windows, Node.js 22.12 or later, pnpm 11, and a Codex desktop installation with local plugin support.
 
 ```powershell
 git clone https://github.com/CharlesQueen/codex-desktop-pet.git
 cd codex-desktop-pet
-pnpm install --frozen-lockfile
-pnpm configure
-pnpm build:release
-codex plugin marketplace add ./release
-codex plugin add codex-desktop-pet@codex-pet-local
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install.ps1
 ```
 
-`pnpm configure` records the checkout’s own paths in an untracked `runtime.json`. Keep the checkout in place while its installed plugin uses the desktop runtime. The Electron runtime is installed by pnpm’s dependency build step.
+The installer installs dependencies, explicitly downloads the Electron runtime, configures this checkout, builds and registers the plugin, then immediately opens the pet without waiting for MCP. It reports success only after a fresh window report confirms visibility and rendered artwork. Startup diagnostics are saved in `.local/desktop/startup.log`. Keep this checkout in place while the installed plugin uses its runtime.
 
-After installation, reload Codex and enable the plugin’s lifecycle callbacks in the client when requested. Automatic following starts when Codex loads the local plugin connection. To test the visible window independently, run `pnpm desktop`; `pnpm preview` opens a local panel preview URL in the terminal.
+Reload Codex and enable lifecycle callbacks when prompted to start automatic work-state following. The initial window stays open without a connection; once MCP connects, the existing window switches to managed mode and exits after the last connection ends. Run `pnpm desktop:start` to show the pet again, or `pnpm desktop` for foreground debugging. `pnpm preview` prints a local panel preview URL.
+
+Installing only through `codex plugin add` registers the plugin but does not run this installer or show a window immediately. Use the setup command above for install-and-show behavior (or `pnpm run setup` after cloning).
 
 ## Controls and language
 
@@ -52,7 +68,25 @@ Right-click the character or tray icon for automatic following, action previews,
 3. Add the pack’s `id`, Chinese `label` and English `label_en` under `outfits` in `assets/manifest.json`. Select the initial pack with `default_outfit`.
 4. Update `canvas`, frame counts, durations and SHA-256 metadata to match your resources; rebuild the plugin.
 
-State names: `idle`, `running-right`, `running-left`, `waving`, `jumping`, `failed`, `waiting`, `running`, `review`, `looking`. For the supplied example, the first nine states contain 84 frames and the look set contains 16. All packs currently share the manifest’s canvas and animation metadata.
+State names: `idle`, `running-right`, `running-left`, `waving`, `jumping`, `failed`, `waiting`, `running`, `review`, `looking`. For the supplied example, the first nine states contain 96 playback frames and the look set contains 16. All packs currently share the manifest’s canvas and animation metadata.
+
+## Updating an existing installation
+
+Exit Codex and choose **Exit pet** from the tray menu. Open PowerShell in your existing repository directory and fetch the update:
+
+```powershell
+git pull --ff-only
+```
+
+After it succeeds, refresh the installed plugin:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/update.ps1
+```
+
+The update rebuilds the plugin and replaces its installed cache, then opens the updated pet. Window settings and local session data stay in `.local`. Reopen Codex to reconnect automatic work-state following. Updating only the Git checkout does not refresh the installed plugin cache.
+
+For ZIP installations, extract the new source files into the existing directory while keeping `.local`, then run the same update command. Commit or stash your own source changes before pulling a Git update.
 
 ## Development
 
@@ -60,6 +94,8 @@ State names: `idle`, `running-right`, `running-left`, `waving`, `jumping`, `fail
 pnpm test
 pnpm desktop:test
 pnpm test:lifecycle
+pnpm test:pointer
+pnpm test:update
 pnpm exec playwright install chromium
 pnpm test:browser
 pnpm format

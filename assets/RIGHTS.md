@@ -6,7 +6,7 @@ The software license does not grant rights in the character, source illustration
 
 The pack was prepared from user-supplied and user-selected visual references. Known reference pages from the development session are [Pixiv 151052782](https://www.pixiv.net/en/artworks/151052782) and [Pixiv 150248547](https://www.pixiv.net/en/artworks/150248547); these links record references and do not establish redistribution permission. Complete attribution and permission records are not available in this repository.
 
-The PNG/APNG files are the existing example resources, preserved without redrawing, resampling, or replacement.
+The waiting animation includes six AI-generated in-between images with detail refinements, inserted in both directions. Its frames are aligned using integer translation without resampling. Other animation resources are preserved.
 
 白裙资源包以《缘之空》的春日野穹作为自定义示例。角色及原作 IP 归相应权利人所有；这是非官方同人示例，不代表已获得原作权利人的认可或授权。
 
@@ -14,4 +14,4 @@ The PNG/APNG files are the existing example resources, preserved without redrawi
 
 资源包依据用户提供及选定的图片参考制作。开发过程中已知的参考页面为 [Pixiv 151052782](https://www.pixiv.net/en/artworks/151052782) 和 [Pixiv 150248547](https://www.pixiv.net/en/artworks/150248547)；列出参考链接不等于获得再次分发许可。本仓库没有完整的署名及授权记录。
 
-现有 PNG/APNG 图片保持原样，未重绘、重采样或替换。
+等待动画加入 6 张经细节修缮的 AI 生成中间态图片，在去程与回程中插入；各帧通过整像素平移对齐，未重采样。其他动作资源保持原样。

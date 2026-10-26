@@ -1,3 +1,4 @@
+// Author: CharlesQueen
 // SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 // Copyright (c) 2026 CharlesQueen
 // 本项目仅供非商业学习、交流与分享。对于他人违反许可证或侵犯第三方权利的使用行为及其后果，作者概不承担任何责任。
@@ -33,6 +34,7 @@ import {
 } from "./window-model.mjs";
 import { activeDesktopHosts } from "../desktop-lifecycle.mjs";
 import { translate, language, outfitLabel } from "../i18n.mjs";
+import { nearbyPointer } from "./pointer-model.mjs";
 let managed = process.argv.includes("--managed"),
   hostTimer,
   emptySince,
@@ -67,6 +69,7 @@ let win,
   tray,
   quitting = false,
   pollTimer,
+  pointerTimer,
   drag,
   ignore = false,
   lastPayload = "",
@@ -451,6 +454,16 @@ function createWindow() {
   registerIpc();
   win.loadFile(path.join(HERE, "index.html"));
   pollTimer = setInterval(broadcast, 400);
+  let wasNearby = false;
+  pointerTimer = setInterval(() => {
+    if (win.webContents.isLoading()) return;
+    const p =
+      !drag && win.isVisible()
+        ? nearbyPointer(screen.getCursorScreenPoint(), win.getBounds())
+        : null;
+    if (p || wasNearby) win.webContents.send("codex-pet-desktop:pointer", p);
+    wasNearby = !!p;
+  }, 100);
   const icon = nativeImage
     .createFromPath(assetPath({ state: "idle", still: true }))
     .resize({ width: 24, height: 24 });
@@ -544,6 +557,7 @@ app.on("before-quit", () => {
   clearTimeout(pinTimer);
   clearInterval(hostTimer);
   clearInterval(pollTimer);
+  clearInterval(pointerTimer);
   clearTimeout(reportTimer);
   tray?.destroy();
 });

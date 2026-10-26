@@ -1,3 +1,4 @@
+// Author: CharlesQueen
 // SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 // Copyright (c) 2026 CharlesQueen
 // 本项目仅供非商业学习、交流与分享。对于他人违反许可证或侵犯第三方权利的使用行为及其后果，作者概不承担任何责任。
@@ -36,6 +37,8 @@ if (process.argv.includes("--release")) {
     "LICENSE.md",
     "NOTICE.md",
     "assets/RIGHTS.md",
+    "docs/media/waiting.gif",
+    "docs/media/drag-direction.gif",
   ];
   for (const file of files) {
     const target = path.join(release, file);
