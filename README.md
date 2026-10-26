@@ -23,21 +23,19 @@ This is a separate native renderer connected to a local Codex plugin. It does no
 
 Download the [latest release](https://github.com/CharlesQueen/codex-desktop-pet/releases/latest), or clone this repository. Releases contain source and the existing artwork; they are not standalone installers.
 
-Requirements: Windows, Node.js 20 or later, pnpm 11, and a Codex desktop installation with local plugin support.
+Requirements: Windows, Node.js 22.12 or later, pnpm 11, and a Codex desktop installation with local plugin support.
 
 ```powershell
 git clone https://github.com/CharlesQueen/codex-desktop-pet.git
 cd codex-desktop-pet
-pnpm install --frozen-lockfile
-pnpm configure
-pnpm build:release
-codex plugin marketplace add ./release
-codex plugin add codex-desktop-pet@codex-pet-local
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install.ps1
 ```
 
-`pnpm configure` records the checkout’s own paths in an untracked `runtime.json`. Keep the checkout in place while its installed plugin uses the desktop runtime. The Electron runtime is installed by pnpm’s dependency build step.
+The installer installs dependencies, explicitly downloads the Electron runtime, configures this checkout, builds and registers the plugin, then immediately opens the pet without waiting for MCP. It reports success only after a fresh window report confirms visibility and rendered artwork. Startup diagnostics are saved in `.local/desktop/startup.log`. Keep this checkout in place while the installed plugin uses its runtime.
 
-After installation, reload Codex and enable the plugin’s lifecycle callbacks in the client when requested. Automatic following starts when Codex loads the local plugin connection. To test the visible window independently, run `pnpm desktop`; `pnpm preview` opens a local panel preview URL in the terminal.
+Reload Codex and enable lifecycle callbacks when prompted to start automatic work-state following. The initial window stays open without a connection; once MCP connects, the existing window switches to managed mode and exits after the last connection ends. Run `pnpm desktop:start` to show the pet again, or `pnpm desktop` for foreground debugging. `pnpm preview` prints a local panel preview URL.
+
+Installing only through `codex plugin add` registers the plugin but does not run this installer or show a window immediately. Use the setup command above for install-and-show behavior (or `pnpm run setup` after cloning).
 
 ## Controls and language
 

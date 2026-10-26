@@ -8,6 +8,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import fs from "node:fs";
 import path from "node:path";
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { ROOT } from "../core.mjs";
 const directory = path.join(ROOT, "qa/lifecycle-" + Date.now()),
   profile = path.join(directory, "profile");
@@ -58,12 +59,34 @@ async function connect() {
   return client;
 }
 try {
+  const launch = () => {
+    const result = spawnSync(
+      process.execPath,
+      [path.join(ROOT, "scripts/start-desktop.mjs")],
+      {
+        env,
+        encoding: "utf8",
+        timeout: 20000,
+        windowsHide: true,
+      },
+    );
+    assert.equal(result.status, 0, result.stderr || result.error?.message);
+    assert.match(result.stdout, /Pet is visible/);
+    return report();
+  };
+  const standalone = launch();
+  assert.equal(standalone.managed, false);
+  assert.equal(standalone.hostCount, 0);
+  await wait(4500);
+  process.kill(standalone.pid, 0);
+  assert.equal(launch().pid, standalone.pid);
   const first = await connect();
   const initial = await until(() => {
     const s = report();
     return s.visible && s.painted && s.managed && !s.exiting ? s : null;
   });
   assert.equal(initial.hostCount, 1);
+  assert.equal(initial.pid, standalone.pid);
   const pid = initial.pid;
   const second = await connect();
   await until(() => hostCount() === 2);
@@ -107,6 +130,9 @@ try {
     ok: true,
     checkedAt: Date.now(),
     checks: [
+      "installer launcher shows painted window without MCP",
+      "standalone survives without hosts and repeated launch reuses window",
+      "MCP takes over existing standalone window",
       "MCP initialize opens visible native window",
       "two hosts share one window",
       "closing one host preserves window",

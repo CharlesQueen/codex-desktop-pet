@@ -23,21 +23,19 @@
 
 下载 [最新版本](https://github.com/CharlesQueen/codex-desktop-pet/releases/latest)，或克隆仓库。下载包包含源码及现有图片资源，不是免安装的独立程序。
 
-需要 Windows、Node.js 20 或更高版本、pnpm 11，以及支持本地插件的 Codex 桌面客户端。
+需要 Windows、Node.js 22.12 或更高版本、pnpm 11，以及支持本地插件的 Codex 桌面客户端。
 
 ```powershell
 git clone https://github.com/CharlesQueen/codex-desktop-pet.git
 cd codex-desktop-pet
-pnpm install --frozen-lockfile
-pnpm configure
-pnpm build:release
-codex plugin marketplace add ./release
-codex plugin add codex-desktop-pet@codex-pet-local
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install.ps1
 ```
 
-`pnpm configure` 会根据当前项目位置生成不纳入 Git 的 `runtime.json`。已安装插件会使用该目录中的浮窗运行环境，因此使用期间请保留项目目录。Electron 运行环境由 pnpm 安装依赖时的构建步骤安装。
+安装脚本会安装依赖、显式下载 Electron 运行程序、配置项目路径、构建并注册插件，然后立即打开桌宠，无须等待 MCP 连接。只有收到本次启动后的可见窗口及图片绘制报告，才会提示成功。启动诊断保存在 `.local/desktop/startup.log`。已安装插件会使用此项目的运行环境，请保留项目目录。
 
-安装完成后重新加载 Codex，并在客户端提示时启用插件的生命周期回调。Codex 加载本地插件连接后会开始自动联动。单独测试浮窗可运行 `pnpm desktop`；`pnpm preview` 会在终端输出本地面板预览地址。
+重新加载 Codex，并在提示时启用生命周期回调，即可开始自动跟随工作状态。首次安装的窗口在没有连接时保持显示；MCP 连接后接管同一个窗口，此后最后一个连接结束时自动退出。再次显示可运行 `pnpm desktop:start`；前台调试可运行 `pnpm desktop`；`pnpm preview` 会输出本地面板预览地址。
+
+仅执行 `codex plugin add` 只会注册插件，不会执行本安装脚本或立即显示窗口。需要“装好就出现”时，请使用上面的安装命令（克隆后也可运行 `pnpm run setup`）。
 
 ## 操作与语言
 
