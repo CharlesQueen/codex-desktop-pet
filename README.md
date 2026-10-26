@@ -1,5 +1,7 @@
 # Codex Desktop Pet
 
+Author: **CharlesQueen**
+
 English · [简体中文](README.zh-CN.md)
 
 A customizable Codex desktop pet plugin with a transparent floating window, native-resolution animation, and automatic work-state following.

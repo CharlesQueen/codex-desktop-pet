@@ -1,5 +1,7 @@
 # Codex Desktop Pet · 可自定义桌宠插件
 
+作者: **CharlesQueen**
+
 [English](README.md) · 简体中文
 
 为 Codex 提供透明桌面浮窗、原始分辨率动画和工作状态自动联动的可自定义桌宠插件。
