@@ -1,6 +1,6 @@
 {
   "name": "codex-desktop-pet",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,9 +11,12 @@
     "desktop:test": "node tests/run-desktop-test.mjs",
     "configure": "node scripts/configure.mjs",
     "setup": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install.ps1",
+    "update": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/update.ps1",
     "desktop:start": "node scripts/start-desktop.mjs",
     "build:release": "node build.mjs --release",
     "test:browser": "node tests/browser.mjs",
+    "test:pointer": "node tests/pointer-renderer.mjs",
+    "test:update": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/install-update.ps1",
     "test:lifecycle": "node tests/desktop-lifecycle.mjs",
     "format": "prettier --write \"*.mjs\" \"desktop/*.{mjs,cjs,html,css}\" \"web/*.{mjs,html}\" \"hooks/*.mjs\" \"scripts/*.mjs\" \"tests/*.mjs\""
   },

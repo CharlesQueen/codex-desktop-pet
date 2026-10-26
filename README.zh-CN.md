@@ -10,12 +10,28 @@
 
 图中角色仅为一个示例资源包，插件名称及控制机制不绑定该角色。图片权利说明见 [assets/RIGHTS.md](assets/RIGHTS.md)。
 
+## 0.2.2 更新重点
+
+- **等待动画更连贯**：新增 6 张中间姿态，组成 20 帧歪头与回正循环，并修缮蕾丝细节、对齐角色位置。
+- **空闲注视范围扩大**：鼠标移动到窗口周围也能触发注视，默认大小下向窗口外延伸约 40 像素；工作动画仍优先显示。
+- **持续拖动也能转身**：按住鼠标途中反向移动，超过少量防抖距离就会切换跑步朝向，无须松开鼠标或越过最初的按下位置。
+
+### 等待动画
+
+<img src="docs/media/waiting.gif" width="360" alt="修缮后的等待动画逐渐歪头并回正" />
+
+### 连续拖动与转身
+
+<img src="docs/media/drag-direction.gif" width="720" alt="持续按住鼠标拖动，桌宠随移动方向左右转身" />
+
+拖动示例使用实际桌宠渲染代码和脚本模拟的鼠标轨迹录制。GIF 为缩小后的演示，安装后的动画仍使用 **1422 × 1117** 画布。
+
 ## 功能
 
 - Windows 透明置顶浮窗；拖动移动，通过 **Ctrl + 滚轮** 或 **− / +** 调整大小。
 - 本地插件连接后自动出现，多个连接共享同一浮窗，最后一个连接结束后自动退出。
 - 根据本地 Codex 生命周期回调切换工作、等待、结束和失败状态，也可以通过 MCP 工具设置临时动作。
-- 九种标准动作及十六个注视方向；示例共包含 100 帧原始资源，统一画布为 **1422 × 1117**。
+- 九种标准动作及十六个注视方向；示例共包含 112 帧播放画面，其中等待动画含 6 张生成的中间态图片，用于去程和回程，统一画布为 **1422 × 1117**。
 - 角色与服饰由 `assets/manifest.json` 配置；面板及托盘菜单支持中英文切换。
 - **Escape** 只收起控制栏；关闭浮窗会隐藏到托盘，通过“退出桌宠”结束程序。
 
@@ -52,7 +68,25 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install.ps1
 3. 在 `assets/manifest.json` 的 `outfits` 中添加 `id`、中文 `label` 和英文 `label_en`，通过 `default_outfit` 选择初始资源包。
 4. 根据实际资源更新 `canvas`、帧数、帧时长和 SHA-256 元数据，再重新构建插件。
 
-状态名称为 `idle`、`running-right`、`running-left`、`waving`、`jumping`、`failed`、`waiting`、`running`、`review`、`looking`。随附示例前九种状态共 84 帧，注视方向共 16 帧。目前所有资源包共享清单中的画布与动画元数据。
+状态名称为 `idle`、`running-right`、`running-left`、`waving`、`jumping`、`failed`、`waiting`、`running`、`review`、`looking`。随附示例前九种状态共 96 帧播放画面，注视方向共 16 帧。目前所有资源包共享清单中的画布与动画元数据。
+
+## 已安装旧版，如何更新
+
+先退出 Codex，并在托盘菜单中选择“退出桌宠”。在原来的仓库目录打开 PowerShell，获取更新：
+
+```powershell
+git pull --ff-only
+```
+
+成功后刷新已安装的插件：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/update.ps1
+```
+
+更新会重新构建插件、替换安装缓存，然后打开新版桌宠。窗口设置和本地会话数据保留在 `.local` 中；重新打开 Codex 后恢复工作状态自动联动。仅拉取 GitHub 代码不会刷新已安装插件的缓存。
+
+通过 ZIP 安装的用户，可将新版源码覆盖到原目录，保留 `.local`，再执行同一更新命令。有自行修改源码的用户，请先提交或暂存自己的改动，再拉取更新。
 
 ## 开发与验证
 
@@ -60,14 +94,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install.ps1
 pnpm test
 pnpm desktop:test
 pnpm test:lifecycle
+pnpm test:pointer
+pnpm test:update
 pnpm exec playwright install chromium
 pnpm test:browser
 pnpm format
 ```
 
 检查覆盖会话隔离、回调并发写入、明确的失败状态、MCP 图片传输、原生窗口操作、连接生命周期和中英文面板。原生窗口测试会打开独立测试浮窗。运行状态、测试截图、本机路径、依赖和生成的发布目录不纳入 Git。
-
-源码提供中英文注释；错误直接报告，不静默吞掉。并发同步与协议契约属于正常功能实现。
 
 ## 仓库权限
 

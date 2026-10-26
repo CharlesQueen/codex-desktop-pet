@@ -25,6 +25,12 @@ contextBridge.exposeInMainWorld("codexPetDesktop", {
   dragMove: (value) => ipcRenderer.send("codex-pet-desktop:drag-move", value),
   dragEnd: () => ipcRenderer.send("codex-pet-desktop:drag-end"),
   painted: (value) => ipcRenderer.send("codex-pet-desktop:painted", value),
+  onPointer: (callback) => {
+    const listener = (_, p) => callback(p);
+    ipcRenderer.on("codex-pet-desktop:pointer", listener);
+    return () =>
+      ipcRenderer.removeListener("codex-pet-desktop:pointer", listener);
+  },
   onStatus: (callback) => {
     const listener = (_, s) => callback(s);
     ipcRenderer.on("codex-pet-desktop:status", listener);

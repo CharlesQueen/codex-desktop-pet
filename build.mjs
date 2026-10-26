@@ -37,6 +37,8 @@ if (process.argv.includes("--release")) {
     "LICENSE.md",
     "NOTICE.md",
     "assets/RIGHTS.md",
+    "docs/media/waiting.gif",
+    "docs/media/drag-direction.gif",
   ];
   for (const file of files) {
     const target = path.join(release, file);

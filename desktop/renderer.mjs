@@ -5,6 +5,7 @@
 // This project is provided solely for noncommercial learning, discussion, and sharing. The author assumes no liability whatsoever for others’ use in violation of the license or third-party rights, or for any resulting consequences.
 
 import { translate } from "../i18n.mjs";
+import { dragDirection, lookDirection } from "./pointer-model.mjs";
 const api = window.codexPetDesktop,
   pet = document.getElementById("pet"),
   controls = document.getElementById("controls"),
@@ -129,15 +130,25 @@ function isControl(target) {
     document.body.classList.contains("show-controls")
   );
 }
-let lastMove = 0,
-  lookTimer;
+api.onPointer((p) => {
+  if (!latest || dragging || Date.now() < suppressUntil) return;
+  const next =
+    latest.state === "idle" && latest.mode === "auto"
+      ? lookDirection(p, pet.getBoundingClientRect())
+      : undefined;
+  if (next !== pointerIndex) {
+    pointerIndex = next;
+    render(latest);
+  }
+});
 document.addEventListener("pointermove", (e) => {
   if (dragging) {
     api.dragMove({ x: e.screenX, y: e.screenY });
-    const diff = e.screenX - dragX;
-    if (Math.abs(diff) > 3) {
-      dragState = diff > 0 ? "running-right" : "running-left";
-      render(latest);
+    const next = dragDirection(dragX, e.screenX, dragState);
+    dragX = next.anchor;
+    if (next.state !== dragState) {
+      dragState = next.state;
+      if (latest) render(latest);
     }
     return;
   }
@@ -146,31 +157,10 @@ document.addEventListener("pointermove", (e) => {
   api.mouseIgnore(!solid && !control);
   if (Date.now() > suppressUntil)
     document.body.classList.toggle("show-controls", solid || control);
-  if (!latest || latest.state !== "idle" || latest.mode !== "auto" || !solid)
-    return;
-  if (Date.now() - lastMove < 90) return;
-  lastMove = Date.now();
-  const b = pet.getBoundingClientRect(),
-    dx = e.clientX - b.width / 2,
-    dy = e.clientY - b.height * 0.35;
-  if (Math.hypot(dx, dy) < 35) {
-    pointerIndex = undefined;
-    render(latest);
-    return;
-  }
-  const angle = ((Math.atan2(dx, -dy) * 180) / Math.PI + 360) % 360;
-  clearTimeout(lookTimer);
-  lookTimer = setTimeout(() => {
-    pointerIndex = Math.round(angle / 22.5) % 16;
-    render(latest);
-  }, 130);
 });
 document.addEventListener("pointerleave", () => {
   if (!dragging) {
     document.body.classList.remove("show-controls");
-    pointerIndex = undefined;
-    clearTimeout(lookTimer);
-    if (latest) render(latest);
     api.mouseIgnore(false);
   }
 });
@@ -179,6 +169,7 @@ document.addEventListener("pointerdown", (e) => {
     return;
   e.preventDefault();
   dragging = true;
+  pointerIndex = undefined;
   dragX = e.screenX;
   document.body.classList.add("dragging");
   document.body.setPointerCapture(e.pointerId);
@@ -205,7 +196,6 @@ function collapse() {
   suppressUntil = Date.now() + 1500;
   document.body.classList.remove("show-controls");
   pointerIndex = undefined;
-  clearTimeout(lookTimer);
   if (latest) render(latest);
 }
 document.addEventListener("keydown", (e) => {

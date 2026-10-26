@@ -1,6 +1,7 @@
 # Author: CharlesQueen
 # SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 # Copyright (c) 2026 CharlesQueen
+param([switch]$Update)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 function Invoke-Step([string]$Command, [string[]]$Arguments) {
@@ -19,8 +20,10 @@ try {
     Invoke-Step 'node' @('scripts/configure.mjs')
     Invoke-Step 'node' @('build.mjs', '--release')
     Invoke-Step 'codex' @('plugin', 'marketplace', 'add', (Join-Path $root 'release'))
+    if ($Update) {
+        Invoke-Step 'codex' @('plugin', 'remove', 'codex-desktop-pet@codex-pet-local')
+    }
     Invoke-Step 'codex' @('plugin', 'add', 'codex-desktop-pet@codex-pet-local')
-    # Show the pet now; MCP can take over the same window later.
     Invoke-Step 'node' @('scripts/start-desktop.mjs')
     Write-Host 'Installed and visible. Reload Codex to enable automatic work-state following.'
 } finally {
