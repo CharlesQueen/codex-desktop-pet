@@ -103,6 +103,8 @@ pnpm format
 
 The tests cover session isolation, concurrent callback writes, explicit failure states, MCP image transport, native-window controls, connection lifetime and the bilingual panel. Native tests open isolated test windows. Runtime state, test captures, local paths, dependencies and generated release folders are excluded from Git.
 
+Source files use English and Chinese comments. Errors are surfaced rather than silently ignored; synchronization and protocol contracts remain part of the implementation.
+
 ## Repository access
 
 Anyone may download or copy the repository under its license. Only collaborators explicitly invited by the owner may open pull requests. Creating, updating, deleting or merging branches in the original repository is reserved to the owner. Automatic merging is disabled. An invitation does not grant permission to bypass these branch restrictions.
