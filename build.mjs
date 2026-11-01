@@ -40,6 +40,10 @@ if (process.argv.includes("--release")) {
     "assets/RIGHTS.md",
     "docs/media/waiting.gif",
     "docs/media/drag-direction.gif",
+    "docs/media/plugin-management-en.png",
+    "docs/media/plugin-management-zh.png",
+    "docs/media/visibility-behavior-en.svg",
+    "docs/media/visibility-behavior-zh.svg",
   ];
   for (const file of files) {
     const target = path.join(release, file);
