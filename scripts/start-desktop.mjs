@@ -4,8 +4,19 @@
 import fs from "node:fs";
 import path from "node:path";
 import { spawn } from "node:child_process";
-import { ROOT } from "../core.mjs";
+import { ROOT, DATA } from "../core.mjs";
 
+const installationFile = path.join(DATA, "installation.json");
+if (fs.existsSync(installationFile)) {
+  const info = JSON.parse(fs.readFileSync(installationFile, "utf8"));
+  if (
+    !info.installed ||
+    !fs.existsSync(path.join(info.installedPath, ".codex-plugin/plugin.json"))
+  )
+    throw new Error(
+      "Plugin is uninstalled. Run pnpm run setup to install it again.",
+    );
+}
 const profile =
   process.env.CODEX_PET_DESKTOP_USER_DATA ||
   path.join(ROOT, ".local", "desktop");

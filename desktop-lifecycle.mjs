@@ -9,6 +9,7 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { spawn } from "node:child_process";
 import { DATA, ROOT } from "./core.mjs";
+import { readVisibility } from "./desktop-visibility.mjs";
 const leases = path.join(DATA, "desktop-hosts");
 const alive = (pid) => {
   try {
@@ -78,6 +79,10 @@ export function attachDesktopHost() {
     fs.renameSync(temporary, file);
   }
   write();
+  process.once("exit", release);
+  // Keep the host lease, but do not restart a pet the user exited.
+  // 保留工作连接，但不重启用户已退出的桌宠。
+  if (readVisibility(directory) === "exited") return release;
   const env = { ...process.env };
   delete env.ELECTRON_RUN_AS_NODE;
   const child = spawn(executable, [main, "--managed"], {
@@ -91,6 +96,5 @@ export function attachDesktopHost() {
     throw error;
   });
   child.unref();
-  process.once("exit", release);
   return release;
 }

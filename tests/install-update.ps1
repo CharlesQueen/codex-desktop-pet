@@ -11,17 +11,17 @@ function node {
 }
 $root = Split-Path $PSScriptRoot -Parent
 & (Join-Path $root 'scripts/update.ps1')
-$remove = $global:petTestSteps.IndexOf('codex plugin remove codex-desktop-pet@codex-pet-local')
 $build = $global:petTestSteps.IndexOf('node build.mjs --release')
-$add = $global:petTestSteps.IndexOf('codex plugin add codex-desktop-pet@codex-pet-local')
-if (-not ($build -ge 0 -and $remove -gt $build -and $add -gt $remove)) { throw 'Wrong update order' }
-if ($global:petTestSteps[-1] -ne 'node scripts/start-desktop.mjs') { throw 'Updated pet was not launched' }
+$register = $global:petTestSteps.IndexOf('node scripts/manage-plugin.mjs register')
+$stop = $global:petTestSteps.IndexOf('node scripts/stop-desktop.mjs')
+$start = $global:petTestSteps.IndexOf('node scripts/start-desktop.mjs')
+if (-not ($build -ge 0 -and $register -gt $build -and $stop -gt $register -and $start -gt $stop)) { throw 'Wrong update order' }
 $global:petTestSteps.Clear()
 & (Join-Path $root 'scripts/install.ps1')
-if ($global:petTestSteps.Contains('codex plugin remove codex-desktop-pet@codex-pet-local')) { throw 'Fresh install removed a plugin' }
+if ($global:petTestSteps.Contains('node scripts/stop-desktop.mjs')) { throw 'Fresh install stopped a pet unnecessarily' }
 $global:petTestSteps.Clear()
 $global:petTestFailBuild = $true
 $failed = $false
 try { & (Join-Path $root 'scripts/update.ps1') } catch { $failed = $true }
-if (-not $failed -or $global:petTestSteps.Exists([Predicate[string]]{ param($s) $s.StartsWith('codex ') })) { throw 'Build failure did not stop the update before plugin changes' }
-Write-Host 'PASS: update order, launch, fresh installation and build failure (mocked external commands).'
+if (-not $failed -or $global:petTestSteps.Exists([Predicate[string]]{ param($s) $s -eq 'node scripts/manage-plugin.mjs register' })) { throw 'Build failure did not stop the update before plugin changes' }
+Write-Host 'PASS: build/register/reload ordering, fresh installation, and build failure before registration.'

@@ -10,6 +10,38 @@ A customizable Codex desktop pet plugin with a transparent floating window, nati
 
 The pictured character is one example pack. The plugin’s identity and animation controls are independent of that character. See [artwork rights](assets/RIGHTS.md).
 
+## What's new in 0.2.2
+
+- **Plugin management window:** right-click the pet or tray icon and choose **Plugin management** to view installation status, version and source directory, open the plugin record in Codex, or uninstall it. Uninstalling stops the pet and removes its registration and cache while retaining local settings and project artwork.
+- **Persistent hiding:** fixed the pet reappearing when a new plugin connection was established. Hiding now lasts through work events, new chats and Codex restarts, until you explicitly show it again from the tray or run `pnpm desktop:start`.
+- **Exit that stays exited:** fixed automatic relaunch after choosing **Exit pet**. Exiting closes the floating window and tray process and saves the choice; subsequent work events and connections cannot reopen it. Run `pnpm desktop:start` to reopen it and restore automatic startup. An explicit install/update also opens the pet.
+- **Accurate window status:** fixed a secondary launch incorrectly marking the shared, still-running window as exited. Multiple connections continue to share one window and respect the saved visibility choice.
+
+### Plugin management in 0.2.2
+
+<img src="docs/media/plugin-management-en.png" width="740" alt="English plugin management page showing installation status, version 0.2.2, View in Codex and Uninstall plugin" />
+
+The actual management page in English; the source directory is shown as example text.
+
+### Hide, exit and restore
+
+<img src="docs/media/visibility-behavior-en.svg" width="1000" alt="Behavior diagram: hiding stays hidden and exiting stays closed through work activity and reconnects; manual actions restore the pet" />
+
+This diagram explains the behavior. Hiding retains the tray for restoration; exiting closes the tray process as well.
+
+## Plugin management
+
+Right-click the pet or tray icon and choose **Plugin management** to view the installed version and status, open its Codex record, or uninstall the plugin. This management window is available from version **0.2.2**.
+
+Uninstalling closes the pet and removes its plugin registration and cache. Your local settings and project artwork are retained. Removing the plugin through Codex also closes its floating window.
+
+You can also manage it from the project folder:
+
+```powershell
+pnpm plugin:status
+pnpm uninstall:plugin
+```
+
 ## What's new in 0.2.1
 
 - **Smoother waiting animation:** six new in-between poses create a 20-frame tilt-and-return loop, with refined lace details and aligned positioning.
@@ -29,7 +61,7 @@ The drag demo uses the desktop renderer with scripted pointer movement. GIF prev
 ## Features
 
 - Transparent, always-on-top Windows companion; drag to move, use **Ctrl + wheel** or **− / +** to resize.
-- Automatic appearance when the local plugin connects, one shared window across connections, and exit after the last connection ends.
+- Automatic appearance when the local plugin connects (unless you have hidden or exited the pet), one shared window across connections, and exit after the last connection ends.
 - Work, waiting, completion and failure states from local Codex lifecycle hooks; temporary actions can also be set through MCP tools.
 - Nine standard action states, plus sixteen look directions. The supplied pack contains 112 playback frames, including six generated in-between images used in both directions of the waiting animation on a shared **1422 × 1117** canvas.
 - Character and outfit packs driven by `assets/manifest.json`; English and Chinese UI selection in the panel and tray menu.
@@ -54,6 +86,12 @@ The installer installs dependencies, explicitly downloads the Electron runtime, 
 Reload Codex and enable lifecycle callbacks when prompted to start automatic work-state following. The initial window stays open without a connection; once MCP connects, the existing window switches to managed mode and exits after the last connection ends. Run `pnpm desktop:start` to show the pet again, or `pnpm desktop` for foreground debugging. `pnpm preview` prints a local panel preview URL.
 
 Installing only through `codex plugin add` registers the plugin but does not run this installer or show a window immediately. Use the setup command above for install-and-show behavior (or `pnpm run setup` after cloning).
+
+## Hide and exit
+
+**Hide until manually shown** keeps the pet hidden through work events, new chat connections, and Codex restarts. Click the tray icon or choose **Show pet** to restore it.
+
+**Exit pet; disable automatic reopening** closes the floating window and tray process and prevents automatic relaunch. Run `pnpm desktop:start` from the project directory to explicitly reopen it and restore automatic startup. The conversation panel's `pet_open` is separate and does not undo the desktop choice. An explicit install/update also opens the pet.
 
 ## Controls and language
 
@@ -96,6 +134,7 @@ Release versions advance consecutively from the latest published release; develo
 pnpm test
 pnpm desktop:test
 pnpm test:lifecycle
+pnpm test:visibility
 pnpm test:pointer
 pnpm test:update
 pnpm exec playwright install chromium
