@@ -17,6 +17,18 @@ The pictured character is one example pack. The plugin’s identity and animatio
 - **Exit that stays exited:** fixed automatic relaunch after choosing **Exit pet**. Exiting closes the floating window and tray process and saves the choice; subsequent work events and connections cannot reopen it. Run `pnpm desktop:start` to reopen it and restore automatic startup. An explicit install/update also opens the pet.
 - **Accurate window status:** fixed a secondary launch incorrectly marking the shared, still-running window as exited. Multiple connections continue to share one window and respect the saved visibility choice.
 
+### Plugin management in 0.2.2
+
+<img src="docs/media/plugin-management-en.png" width="740" alt="English plugin management page showing installation status, version 0.2.2, View in Codex and Uninstall plugin" />
+
+The actual management page in English; the source directory is shown as example text.
+
+### Hide, exit and restore
+
+<img src="docs/media/visibility-behavior-en.svg" width="1000" alt="Behavior diagram: hiding stays hidden and exiting stays closed through work activity and reconnects; manual actions restore the pet" />
+
+This diagram explains the behavior. Hiding retains the tray for restoration; exiting closes the tray process as well.
+
 ## Plugin management
 
 Right-click the pet or tray icon and choose **Plugin management** to view the installed version and status, open its Codex record, or uninstall the plugin. This management window is available from version **0.2.2**.
