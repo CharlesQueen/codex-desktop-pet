@@ -19,13 +19,10 @@ try {
     Invoke-Step 'node' @('node_modules/electron/install.js')
     Invoke-Step 'node' @('scripts/configure.mjs')
     Invoke-Step 'node' @('build.mjs', '--release')
-    Invoke-Step 'codex' @('plugin', 'marketplace', 'add', (Join-Path $root 'release'))
-    if ($Update) {
-        Invoke-Step 'codex' @('plugin', 'remove', 'codex-desktop-pet@codex-pet-local')
-    }
-    Invoke-Step 'codex' @('plugin', 'add', 'codex-desktop-pet@codex-pet-local')
+    Invoke-Step 'node' @('scripts/manage-plugin.mjs', 'register')
+    if ($Update) { Invoke-Step 'node' @('scripts/stop-desktop.mjs') }
     Invoke-Step 'node' @('scripts/start-desktop.mjs')
-    Write-Host 'Installed and visible. Reload Codex to enable automatic work-state following.'
+    Write-Host 'Installed; native window verified. Reload Codex to verify its plugin-management page.'
 } finally {
     Pop-Location
 }

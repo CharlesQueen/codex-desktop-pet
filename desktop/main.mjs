@@ -12,8 +12,12 @@ import {
   Tray,
   nativeImage,
   screen,
+  shell,
+  dialog,
 } from "electron";
 import fs from "node:fs";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import {
@@ -33,6 +37,7 @@ import {
   visibleArea,
 } from "./window-model.mjs";
 import { activeDesktopHosts } from "../desktop-lifecycle.mjs";
+import { readVisibility, writeVisibility } from "../desktop-visibility.mjs";
 import { translate, language, outfitLabel } from "../i18n.mjs";
 import { nearbyPointer } from "./pointer-model.mjs";
 let managed = process.argv.includes("--managed"),
@@ -65,6 +70,92 @@ if (fs.existsSync(settingsPath))
   };
 if (takeArg("--session")) settings.session_id = takeArg("--session");
 let hasBeenRevealed = false;
+let managementWindow;
+const executeFile = promisify(execFile),
+  installationFile = path.join(DATA, "installation.json");
+function installationInfo() {
+  const info = fs.existsSync(installationFile)
+    ? JSON.parse(fs.readFileSync(installationFile, "utf8"))
+    : {
+        name: "Codex Desktop Pet",
+        version: JSON.parse(
+          fs.readFileSync(path.join(ROOT, "package.json"), "utf8"),
+        ).version,
+        installed: false,
+      };
+  return {
+    ...info,
+    locale: settings.locale,
+    installed:
+      !!info.installed &&
+      fs.existsSync(path.join(info.installedPath, ".codex-plugin/plugin.json")),
+  };
+}
+function managePlugin() {
+  if (managementWindow) {
+    managementWindow.show();
+    managementWindow.focus();
+    return;
+  }
+  managementWindow = new BrowserWindow({
+    width: 740,
+    height: 560,
+    title: translate(settings.locale, "management"),
+    parent: win,
+    show: false,
+    autoHideMenuBar: true,
+    webPreferences: {
+      preload: path.join(HERE, "management-preload.cjs"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+  managementWindow.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+  managementWindow.webContents.on("will-navigate", (event) =>
+    event.preventDefault(),
+  );
+  managementWindow.on("closed", () => (managementWindow = undefined));
+  managementWindow.once("ready-to-show", () => {
+    managementWindow.show();
+    writeReport();
+  });
+  managementWindow.loadFile(path.join(HERE, "management.html"));
+}
+ipcMain.handle("codex-pet-management:status", () => installationInfo());
+ipcMain.handle("codex-pet-management:open", () =>
+  shell.openExternal(
+    "codex://plugins/codex-desktop-pet?marketplacePath=" +
+      encodeURIComponent(path.join(ROOT, ".agents/plugins/marketplace.json")),
+  ),
+);
+ipcMain.handle("codex-pet-management:uninstall", async (event) => {
+  if (event.sender !== managementWindow?.webContents)
+    throw new Error("Unknown management window");
+  const zh = settings.locale === "zh";
+  const choice = await dialog.showMessageBox(managementWindow, {
+    type: "question",
+    buttons: zh ? ["取消", "卸载插件"] : ["Cancel", "Uninstall plugin"],
+    defaultId: 0,
+    cancelId: 0,
+    message: zh ? "卸载 Codex Desktop Pet？" : "Uninstall Codex Desktop Pet?",
+    detail: zh
+      ? "会停止桌宠并移除插件注册，保留本地设置及项目资源。"
+      : "Stops the pet and removes its plugin registration. Settings and project assets are retained.",
+  });
+  if (choice.response !== 1) return { cancelled: true };
+  const { stdout } = await executeFile(
+    "node",
+    [
+      path.join(ROOT, "scripts/manage-plugin.mjs"),
+      "uninstall",
+      "--from-desktop",
+    ],
+    { windowsHide: true, env: process.env },
+  );
+  setTimeout(() => quit("plugin-uninstalled"), 800);
+  return JSON.parse(stdout);
+});
 let win,
   tray,
   quitting = false,
@@ -116,9 +207,14 @@ function writeReport() {
           updatedAt: Date.now(),
           pid: process.pid,
           visible: win.isVisible(),
+          visibilityMode: readVisibility(ROOT),
           destroyed: win.isDestroyed(),
           alwaysOnTop: win.isAlwaysOnTop(),
           transparent: true,
+          managementVisible:
+            !!managementWindow &&
+            !managementWindow.isDestroyed() &&
+            managementWindow.isVisible(),
           managed,
           hostCount: activeDesktopHosts().length,
           nativeHandle: win.getNativeWindowHandle().toString("hex"),
@@ -137,17 +233,37 @@ function writeReport() {
     );
   }, 80);
 }
-let pinTimer;
-// Reapply once after Windows finishes showing the native window. / Windows 显示窗口后再应用一次置顶。
+let pinTimer,
+  pinRevision = 0;
+// Windows can reset topmost while showing a window. / Windows 显示窗口时可能重置置顶状态。
 function applyPin() {
   clearTimeout(pinTimer);
-  win.setAlwaysOnTop(settings.alwaysOnTop, "floating");
-  pinTimer = setTimeout(
-    () => win.setAlwaysOnTop(settings.alwaysOnTop, "floating"),
-    150,
-  );
+  const revision = ++pinRevision;
+  function apply(attempt) {
+    if (quitting || win.isDestroyed() || revision !== pinRevision) return;
+    win.setAlwaysOnTop(settings.alwaysOnTop, "floating");
+    if (attempt < 8)
+      pinTimer = setTimeout(() => {
+        if (
+          !quitting &&
+          !win.isDestroyed() &&
+          revision === pinRevision &&
+          win.isAlwaysOnTop() !== settings.alwaysOnTop
+        )
+          apply(attempt + 1);
+      }, 150);
+  }
+  apply(0);
 }
-function reveal() {
+function hide() {
+  writeVisibility(ROOT, "hidden");
+  hasBeenRevealed = true;
+  win.hide();
+  writeReport();
+}
+function reveal(explicit = true) {
+  if (explicit) writeVisibility(ROOT, "shown");
+  else if (readVisibility(ROOT) !== "shown") return;
   hasBeenRevealed = true;
   win.setIgnoreMouseEvents(false);
   ignore = false;
@@ -196,6 +312,7 @@ function automatic() {
   broadcast();
 }
 function quit(reason = "user") {
+  if (reason === "user") writeVisibility(ROOT, "exited");
   exitReason = reason;
   quitting = true;
   app.quit();
@@ -203,6 +320,18 @@ function quit(reason = "user") {
 function watchHosts() {
   if (hostTimer) return;
   hostTimer = setInterval(() => {
+    if (fs.existsSync(installationFile)) {
+      const info = JSON.parse(fs.readFileSync(installationFile, "utf8"));
+      if (
+        !info.installed ||
+        !fs.existsSync(
+          path.join(info.installedPath, ".codex-plugin/plugin.json"),
+        )
+      ) {
+        quit("plugin-uninstalled");
+        return;
+      }
+    }
     if (!managed) return;
     const hosts = activeDesktopHosts();
     if (hosts.length) {
@@ -219,7 +348,7 @@ function menu() {
   Menu.buildFromTemplate([
     {
       label: win.isVisible() ? t("hide") : t("show"),
-      click: () => (win.isVisible() ? win.hide() : reveal()),
+      click: () => (win.isVisible() ? hide() : reveal()),
     },
     {
       label: t("pin"),
@@ -294,6 +423,7 @@ function menu() {
       })),
     },
     { type: "separator" },
+    { label: t("management"), click: managePlugin },
     { label: t("exit"), click: () => quit() },
   ]).popup({ window: win });
 }
@@ -330,13 +460,7 @@ function registerIpc() {
   });
   for (const [channel, action] of [
     ["menu", menu],
-    [
-      "hide",
-      () => {
-        win.hide();
-        writeReport();
-      },
-    ],
+    ["hide", hide],
   ])
     ipcMain.on("codex-pet-desktop:" + channel, (event) => {
       if (fromWindow(event)) action();
@@ -380,7 +504,7 @@ function registerIpc() {
   ipcMain.on("codex-pet-desktop:painted", (event, p) => {
     if (fromWindow(event) && STATES.includes(p.state)) {
       painted = p;
-      if (!testMode && !hasBeenRevealed) reveal();
+      if (!testMode && !hasBeenRevealed) reveal(false);
       writeReport();
     }
   });
@@ -431,8 +555,7 @@ function createWindow() {
   win.on("close", (event) => {
     if (!quitting) {
       event.preventDefault();
-      win.hide();
-      writeReport();
+      hide();
     }
   });
   win.on("moved", () => {
@@ -469,13 +592,33 @@ function createWindow() {
     .resize({ width: 24, height: 24 });
   tray = new Tray(icon);
   tray.setToolTip("Codex Desktop Pet");
-  tray.on("click", reveal);
+  tray.on("click", () => reveal());
   tray.on("right-click", menu);
 }
-if (!app.requestSingleInstanceLock()) {
+// Recheck in the desktop process as older hosts can still send automatic launches.
+// 桌面进程再次检查，兼容仍会发起自动启动的旧连接。
+const suppressedLaunch = managed && readVisibility(ROOT) === "exited";
+const ownsInstance = !suppressedLaunch && app.requestSingleInstanceLock();
+if (!ownsInstance) {
   app.quit();
 } else {
   app.on("second-instance", (_event, argv) => {
+    if (argv.includes("--exit")) {
+      quit();
+      return;
+    }
+    if (argv.includes("--hide")) {
+      hide();
+      return;
+    }
+    if (argv.includes("--quit")) {
+      quit("uninstall");
+      return;
+    }
+    if (argv.includes("--manage")) {
+      managePlugin();
+      return;
+    }
     if (argv.includes("--managed")) {
       managed = true;
       emptySince = undefined;
@@ -487,12 +630,25 @@ if (!app.requestSingleInstanceLock()) {
       saveSettings();
       broadcast();
     }
-    reveal();
+    if (!argv.includes("--managed")) reveal();
   });
   app.whenReady().then(() => {
+    if (process.argv.includes("--quit")) {
+      quit("uninstall");
+      return;
+    }
+    if (process.argv.includes("--exit")) {
+      quit();
+      return;
+    }
+    if (process.argv.includes("--hide")) writeVisibility(ROOT, "hidden");
+    else if (!managed && !process.argv.includes("--manage"))
+      writeVisibility(ROOT, "shown");
+    if (activeDesktopHosts().length) managed = true;
     settings.locale ??= language(app.getLocale());
     createWindow();
     watchHosts();
+    if (process.argv.includes("--manage")) managePlugin();
     if (testMode)
       import("../tests/native-window.mjs")
         .then(({ runNativeWindowTest }) =>
@@ -537,6 +693,9 @@ if (!app.requestSingleInstanceLock()) {
   });
 }
 app.on("before-quit", () => {
+  // A short-lived second instance must not mark the shared window as exited.
+  // 短暂的第二实例不能把仍在运行的共享窗口标记为已退出。
+  if (!ownsInstance) return;
   if (fs.existsSync(reportPath)) {
     const last = JSON.parse(fs.readFileSync(reportPath, "utf8"));
     fs.writeFileSync(
@@ -546,6 +705,7 @@ app.on("before-quit", () => {
           ...last,
           exiting: true,
           exitReason: exitReason || "application-exit",
+          visibilityMode: readVisibility(ROOT),
           closedAt: Date.now(),
         },
         null,

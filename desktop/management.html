@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'"
+    />
+    <title>Codex Desktop Pet · Management</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 32px;
+        font:
+          15px/1.65 system-ui,
+          "Microsoft YaHei",
+          sans-serif;
+        color: #292534;
+        background: #faf8fc;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 25px;
+      }
+      p {
+        color: #71687c;
+      }
+      dl {
+        padding: 18px;
+        background: #fff;
+        border: 1px solid #e6deeb;
+        border-radius: 14px;
+      }
+      dt {
+        font-size: 12px;
+        color: #8b8095;
+      }
+      dd {
+        margin: 0 0 12px;
+        overflow-wrap: anywhere;
+      }
+      button {
+        padding: 10px 16px;
+        border: 1px solid #d8cce2;
+        background: #fff;
+        border-radius: 10px;
+        color: #53465f;
+        font: inherit;
+        cursor: pointer;
+      }
+      .danger {
+        color: #a63d54;
+        border-color: #ddb3bd;
+      }
+      footer {
+        margin-top: 22px;
+        font-size: 12px;
+        color: #8b8095;
+      }
+      #result {
+        min-height: 26px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Codex Desktop Pet</h1>
+    <p id="intro"></p>
+    <dl>
+      <dt id="state-label"></dt>
+      <dd id="state"></dd>
+      <dt id="version-label"></dt>
+      <dd id="version"></dd>
+      <dt id="source-label"></dt>
+      <dd id="source"></dd>
+    </dl>
+    <button id="open"></button> <button id="uninstall" class="danger"></button>
+    <p id="result" role="status"></p>
+    <footer id="note"></footer>
+    <script type="module" src="management.mjs"></script>
+  </body>
+</html>

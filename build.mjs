@@ -24,6 +24,7 @@ if (process.argv.includes("--release")) {
     ".mcp.json",
     "runtime.json",
     "desktop-lifecycle.mjs",
+    "desktop-visibility.mjs",
     "core.mjs",
     "i18n.mjs",
     "hooks/bridge.mjs",
@@ -66,6 +67,7 @@ if (process.argv.includes("--release")) {
     JSON.stringify(
       {
         name: "codex-pet-local",
+        interface: { displayName: "Codex Desktop Pet · 本机桌宠" },
         plugins: [
           {
             name: "codex-desktop-pet",

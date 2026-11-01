@@ -1,6 +1,6 @@
 {
   "name": "codex-desktop-pet",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -18,7 +18,12 @@
     "test:pointer": "node tests/pointer-renderer.mjs",
     "test:update": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/install-update.ps1",
     "test:lifecycle": "node tests/desktop-lifecycle.mjs",
-    "format": "prettier --write \"*.mjs\" \"desktop/*.{mjs,cjs,html,css}\" \"web/*.{mjs,html}\" \"hooks/*.mjs\" \"scripts/*.mjs\" \"tests/*.mjs\""
+    "format": "prettier --write \"*.mjs\" \"desktop/*.{mjs,cjs,html,css}\" \"web/*.{mjs,html}\" \"hooks/*.mjs\" \"scripts/*.mjs\" \"tests/*.mjs\"",
+    "uninstall:plugin": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/uninstall.ps1",
+    "plugin:status": "node scripts/manage-plugin.mjs status",
+    "test:installation": "node tests/installation.mjs",
+    "test:management": "node tests/management-page.mjs",
+    "test:visibility": "node tests/visibility-lifecycle.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "^1.0.0",
